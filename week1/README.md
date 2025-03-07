@@ -18,6 +18,28 @@
         - 1500+ dimensions
         - ideal for search
 
+### To Use Script:
+``` bash
+# in root
+python -m venv .venv
+
+source .venv/bin/activate
+
+pip install -r requirements.txt
+
+cd week1
+
+# Create a .env file from the example
+cp .env.example .env
+
+# Edit the .env file to add your MongoDB password
+# Replace <your_mongodb_password> with your actual password
+
+python -m database.py
+```
+
+
+
 ----
 # Research Findings:
 
