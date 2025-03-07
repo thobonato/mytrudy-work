@@ -22,71 +22,43 @@
 # Research Findings:
 
 ### Vector Database Solutions
+Rough estimate for GB requirements: $ \text{memory size} = \text{number of vectors} \times \text{vector dimension} \times 4 \text{ bytes} \times 1.5 $. For 80M vectors of ~1500 dimensions, $\text{memory size} = 720\text{GB}$
 
-#### Managed SaaS Options
+PostgreSQL with pgvector is the most cost-effective vector DB for large-scale applications.
 
-| Database | Strengths | Limitations | Cost (80M vectors) |
-|----------|-----------|-------------|-------------------|
-| **Pinecone** | • Fully managed<br>• Minimal operational overhead<br>• Strong horizontal scaling | • Stores only vectors (needs separate doc storage)<br>• Potential vendor lock-in | Not specifically detailed |
-| **Databricks Vector Search** | • Clear pricing model<br>• Integrated with Databricks ecosystem | • Higher cost option | ~$8,000-10,000/month |
 
-#### Open Source Options
+**MongoDB Atlas Vector Search:**
+Cost is roughly \$0.98/hr (\$715/mo) given requirements.
 
-| Database | Strengths | Limitations | Cost |
-|----------|-----------|-------------|------|
-| **Milvus** | • Mature open-source solution<br>• Comprehensive features<br>• Scales to billions of vectors | • Steeper learning curve<br>• More complex operations | Infrastructure & operational only |
-| **Weaviate** | • GraphQL-based API<br>• Schema-based approach<br>• Hybrid search capabilities | Not specified | Infrastructure & operational only |
-| **Qdrant** | • High-performance<br>• Real-time updates<br>• Filter-before-search<br>• Rust-based for efficiency | Not specified | Infrastructure & operational only |
-| **Faiss** | • Exceptional performance<br>• Memory efficiency | • Not a complete database solution<br>• Lacks built-in persistence | Infrastructure & operational only |
+**AWS:**
+AWS Marketplace, a pre-configured PostgreSQL 16 with pgvector extension can be deployed for as little as \$0.292 per hour (~\$215 per month) using a recommended `t3.medium` instance.
 
-#### Hybrid Solutions
+**PostgreSQL with pgvectorscale vs. Pinecone:**
+When compared to Pinecone's storage-optimized index, PostgreSQL with pgvector and pgvectorscale achieves 28x lower p95 latency and 16x higher query throughput for approximate nearest neighbor queries at 99% recall8. Even when compared against Pinecone's performance-optimized index, PostgreSQL with pgvectorscale delivers 1.4x lower p95 latency and 1.5x higher query throughput6.
 
-| Database | Strengths | Limitations | Cost |
-|----------|-----------|-------------|------|
-| **MongoDB Atlas Vector Search** | • Integrated with document DB<br>• Single source of truth<br>• Supports nested documents | • Unclear if available on-premises | Not specified |
+#### Implementation Considerations
+To optimize PostgreSQL with pgvector for tens of millions of high-dimensional vectors, consider the following:
+- Proper indexing: Use appropriate indexing methods such as IVF_FLAT or HNSW to balance between search accuracy and performance16.
+- Hardware sizing: Ensure sufficient memory and CPU resources for your specific workload.
+- Consider pgvectorscale: This extension significantly improves performance for large-scale vector workloads through innovations like StreamingDiskANN and Statistical Binary Quantization6.
+- Vector dimensionality: For vectors around 1500 dimensions (similar to OpenAI's 1536-dimensional embeddings), be aware that approximately 6GB of storage is needed per million vectors10.
+
 
 ### Embedding Models
 
-#### OpenAI Models
-
-| Model | Dimensions | Token Limit | Performance (MIRACL score) | Cost |
-|-------|------------|-------------|----------------------------|------|
-| **text-embedding-ada-002** | 1536 | 8191 | 31.4 | $0.10 per million tokens |
-| **text-embedding-3-large** | 3072 | 8191 | 54.9 | $0.13 per million tokens |
-| **text-embedding-3-small** | 1536 | 8191 | 44.0 | $0.02 per million tokens |
-
-#### Hugging Face Models
+#### HuggingFace Models ([MTEB leaderboard](http://mteb-leaderboard.hf.space/?benchmark_name=MTEB%28eng%2C+v2%29))
 - Various embedding models available
-- Selection guidance:
-  - Consult MTEB leaderboard for high performers
-  - Consider domain-specific models
-  - Evaluate based on specific retrieval tasks
 
-### Cost Considerations for 80M Embeddings
+| Model | Parameter Size| Dimensions | Token Limit | Performance MTEB | Cost | 
+|-------|---------------|------------|-------------|------|------|
+multilingual-e5-large-instruct | 560M | 1024 | 512 | 84.72% | ?
+GIST-large-Embedding-v0 | 335M | 1024 | 512 | 84.44% | ?
+mxbai-embed-large-v1 | 335M | 1024 | 512 | 84.42% | ?
+text-embedding-3-small | Unknown | 1536 | 8191 | 81.4% | $0.02/1M tok
 
-#### Vector Database Monthly Costs
-- **Managed solutions**: ~$8,000-10,000/month (based on Databricks pricing)
-- **Open-source**: Infrastructure and operational costs vary
-
-#### One-time Embedding Generation Costs 
-(assuming 50 tokens/record × 80M records = 4B tokens)
-
-| Model | Cost for 4B tokens |
-|-------|-------------------|
-| **text-embedding-3-large** | $520,000 |
-| **text-embedding-ada-002** | $400,000 |
-| **text-embedding-3-small** | $80,000 |
-
-### Implementation Recommendations
-
-#### Vector Database Selection
-- **For operational simplicity**: Pinecone
-- **For control/vendor independence**: Milvus
-- **For MongoDB users**: MongoDB Atlas Vector Search
-
-#### Embedding Model Selection
-- **Best value**: text-embedding-3-small (excellent performance at lower cost)
-- **Highest performance**: text-embedding-3-large (superior performance at premium cost)
+Time estimate: 200K toks/hour with HF models, ~900K toks/hour on OpenAI.
+Cost estimate: \$80 for 80M vectors w/ OpenAI
+<small>*using AWS g4dn.xlarge</small>
 
 ----
 
