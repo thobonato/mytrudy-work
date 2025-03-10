@@ -88,3 +88,36 @@ Cost estimate: \$80 for 80M vectors w/ OpenAI
 
 ![Week 1 Trudy Image](./trudy_week1.png)
 
+
+
+#### Meeting Takeways:
+- go with OpenAI for embeddings
+- Prepare first version of vector DB: MongoDB Atlas Vector Serach--they can always move it
+- when build own weviate, move there
+- Local AWS account access sent on Sunday
+- Prepare MongoDB database, S3 or Nautilus DB
+- Explain structure Monday
+- Tuesday midday setup ready
+- Calculate embeddings for all the data by Friday/Saturday 
+- Code review while working next week
+- Tomorrow:
+    - Experimental AWS account
+- Tuesday Midday:
+    - Start calculating embeddings
+    - Beware of the cost
+- Start with small dataset making sure you are not losing a lot of data
+- Find some way to do this properly
+    - Difficult to prevent this data leakage
+- Make sure everything is working concurrently
+- Plan to charge full-time until you start your internship
+    - 10/hrs week
+    - Prepare an invoice with ChatGPT and send to Kimon
+    - On the 5th of every month, charge for the whole month
+    - One sentence memo each month, line items
+    - $1,600/mo
+    - SEND DRAFT
+
+Misc:
+- kimon willing to talk to my parents
+- Do it only ***IFF*** you believe in the vision, team, & purpose OF THE COMPANY
+    - entreprenuers are trained to sell
